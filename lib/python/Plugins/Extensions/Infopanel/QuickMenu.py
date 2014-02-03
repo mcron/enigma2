@@ -1,6 +1,5 @@
-
-from enigma import eListboxPythonMultiContent, gFont, eEnv, getMachineBrand, getMachineName
-
+from enigma import eListboxPythonMultiContent, gFont, eEnv
+from boxbranding import getMachineBrand, getMachineName, getBoxType
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.Pixmap import Pixmap
@@ -20,32 +19,30 @@ from Screens.ScanSetup import ScanSimple, ScanSetup
 from Screens.Setup import Setup, getSetupTitle
 from Screens.HarddiskSetup import HarddiskSelection, HarddiskFsckSelection, HarddiskConvertExt4Selection
 from Screens.SkinSelector import LcdSkinSelector
+from Screens.VideoMode import VideoSetup
 
 from Plugins.Plugin import PluginDescriptor
-from Plugins.SystemPlugins.PositionerSetup.plugin import PositionerSetup, RotorNimSelection
-from Plugins.SystemPlugins.Satfinder.plugin import Satfinder, SatNimSelection
+from Plugins.SystemPlugins.Satfinder.plugin import Satfinder
 from Plugins.SystemPlugins.NetworkBrowser.MountManager import AutoMountManager
 from Plugins.SystemPlugins.NetworkBrowser.NetworkBrowser import NetworkBrowser
 from Plugins.SystemPlugins.NetworkWizard.NetworkWizard import NetworkWizard
-from Plugins.SystemPlugins.Videomode.plugin import VideoSetup
-from Plugins.SystemPlugins.Videomode.VideoHardware import video_hw
 from Plugins.Extensions.Infopanel.RestartNetwork import RestartNetwork
 from Plugins.Extensions.Infopanel.MountManager import HddMount
 from Plugins.Extensions.Infopanel.SoftcamPanel import *
+from Plugins.Extensions.Infopanel.SoftwarePanel import SoftwarePanel
+from Plugins.SystemPlugins.SoftwareManager.Flash_online import FlashOnline
 from Plugins.SystemPlugins.SoftwareManager.ImageBackup import ImageBackup
 from Plugins.SystemPlugins.SoftwareManager.plugin import UpdatePlugin, SoftwareManagerSetup
 from Plugins.SystemPlugins.SoftwareManager.BackupRestore import BackupScreen, RestoreScreen, BackupSelection, getBackupPath, getOldBackupPath, getBackupFilename
-from Plugins.Extensions.Infopanel.SoftwarePanel import SoftwarePanel
 
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_SKIN_IMAGE, SCOPE_SKIN
 from Tools.LoadPixmap import LoadPixmap
 
-from os import path
+from os import path, listdir
 from time import sleep
 from re import search
 
 import NavigationInstance
-
 plugin_path_networkbrowser = eEnv.resolve("${libdir}/enigma2/python/Plugins/SystemPlugins/NetworkBrowser")
 
 if path.exists("/usr/lib/enigma2/python/Plugins/Extensions/AudioSync"):

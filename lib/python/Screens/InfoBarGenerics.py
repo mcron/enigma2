@@ -2454,12 +2454,14 @@ class InfoBarExtensions:
 				{
 					"extensions": (self.bluekey_ex, _("Show extensions...")),
 					"showPluginBrowser": (self.showPluginBrowser, _("Show the plugin browser..")),
+					"showInfoPanel": (self.showInfoPanel, _("Show the InfoPanel..")),
 					"showEventInfo": (self.SelectopenEventView, _("Show the infomation on current event.")),
 					"openTimerList": (self.showTimerList, _("Show the list of timers.")),
 					"openAutoTimerList": (self.showAutoTimerList, _("Show the list of AutoTimers.")),
 					"openEPGSearch": (self.showEPGSearch, _("Search the epg for current event.")),
 					"openIMDB": (self.showIMDB, _("Search IMDb for information about current event.")),
 					"showMediaPlayer": (self.showMediaPlayer, _("Show the media player...")),
+					"showMediaPortal": (self.showMediaPortal, _("Show the Mediaportal...")),
 				}, 1) # lower priority
 		else:
 			self["InstantExtensionsActions"] = HelpableActionMap(self, "InfobarExtensions",
@@ -2468,6 +2470,8 @@ class InfoBarExtensions:
 					"showPluginBrowser": (self.showPluginBrowser, _("Show the plugin browser..")),
 					"showEventInfo": (self.SelectopenEventView, _("Show the infomation on current event.")),
 					"showMediaPlayer": (self.showMediaPlayer, _("Show the media player...")),
+					"showMediaPortal": (self.showMediaPortal, _("Show the Mediaportal...")),
+					"showInfoPanel": (self.showInfoPanel, _("Show the InfoPanel..")),
 				}, 1) # lower priority
 
 		self.addExtension(extension = self.getLogManager, type = InfoBarExtensions.EXTENSION_LIST)
@@ -2537,6 +2541,10 @@ class InfoBarExtensions:
 	def getCCname(self):
 		return _("CCcam Info")
 
+	def showInfoPanel(self):
+		from Plugins.Extensions.Infopanel.plugin import Infopanel
+		self.session.open(Infopanel)
+
 	def getCCcamInfo(self):
 		if pathExists('/usr/bin/'):
 			softcams = os.listdir('/usr/bin/')
@@ -2588,6 +2596,10 @@ class InfoBarExtensions:
 			else:
 				for y in x[1]():
 					self.updateExtension(y[0], y[1])
+
+	def showMediaPortal(self):
+		from Plugins.Extensions.MediaPortal.plugin import haupt_Screen
+		self.session.open(haupt_Screen)
 
 
 	def showExtensionSelection(self):

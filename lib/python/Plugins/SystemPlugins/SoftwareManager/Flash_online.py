@@ -13,12 +13,12 @@ from Screens.Console import Console
 from Screens.HelpMenu import HelpableScreen
 from Screens.TaskView import JobView
 from Tools.Downloader import downloadWithProgress
-from enigma import getBoxType, getDistro, getMachineName
+from boxbranding import getBoxType,  getImageDistro, getMachineName, getMachineBrand
+distro =  getImageDistro()
 import urllib2
 import os
 import shutil
 
-distro = getDistro()
 
 #############################################################################################################
 feedurl_mcron = 'http://sat-world-forum.com/ronny/images/ventonhdx/online'
