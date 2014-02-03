@@ -41,7 +41,7 @@ class About(Screen):
 		self["lab2"] = StaticText(_("By mcron"))
 		model = None
 		AboutText = ""
-		self["lab3"] = StaticText(_("Support at") + " www.opena.tv")
+		self["lab3"] = StaticText(_("Support at") + " www.sat-world-forum.com")
 		AboutText += _("Model:\t%s %s\n") % (getMachineBrand(), getMachineName())
 
 		if path.exists('/proc/stb/info/chipset'):
