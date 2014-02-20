@@ -2462,6 +2462,7 @@ class InfoBarExtensions:
 					"openIMDB": (self.showIMDB, _("Search IMDb for information about current event.")),
 					"showMediaPlayer": (self.showMediaPlayer, _("Show the media player...")),
 					"showMediaPortal": (self.showMediaPortal, _("Show the Mediaportal...")),
+					"showMediaCenter": (self.showMediaCenter, _("Show the MediaCenter..")),
 				}, 1) # lower priority
 		else:
 			self["InstantExtensionsActions"] = HelpableActionMap(self, "InfobarExtensions",
@@ -2472,6 +2473,7 @@ class InfoBarExtensions:
 					"showMediaPlayer": (self.showMediaPlayer, _("Show the media player...")),
 					"showMediaPortal": (self.showMediaPortal, _("Show the Mediaportal...")),
 					"showInfoPanel": (self.showInfoPanel, _("Show the InfoPanel..")),
+					"showMediaCenter": (self.showMediaCenter, _("Show the MediaCenter..")),
 				}, 1) # lower priority
 
 		self.addExtension(extension = self.getLogManager, type = InfoBarExtensions.EXTENSION_LIST)
@@ -2757,15 +2759,21 @@ class InfoBarExtensions:
 			self.session.open(MessageBox, _("The IMDb plugin is not installed!\nPlease install it."), type = MessageBox.TYPE_INFO,timeout = 10 )
 
 	def showMediaPlayer(self):
-		if isinstance(self, InfoBarExtensions):
-			if isinstance(self, InfoBar):
-				try: # falls es nicht installiert ist
-					from Plugins.Extensions.MediaPlayer.plugin import MediaPlayer
-					self.session.open(MediaPlayer)
-					no_plugin = False
-				except Exception, e:
-					self.session.open(MessageBox, _("The MediaPlayer plugin is not installed!\nPlease install it."), type = MessageBox.TYPE_INFO,timeout = 10 )
+		try:
+			from Plugins.Extensions.MediaPlayer.plugin import MediaPlayer
+			self.session.open(MediaPlayer)
+			no_plugin = False
+		except Exception, e:
+			self.session.open(MessageBox, _("The MediaPlayer plugin is not installed!\nPlease install it."), type = MessageBox.TYPE_INFO,timeout = 10 )
 
+	def showMediaCenter(self):
+		try:
+			from Plugins.Extensions.BMediaCenter.plugin import DMC_MainMenu
+			self.session.open(DMC_MainMenu)
+			no_plugin = False
+		except Exception, e:
+			self.session.open(MessageBox, _("The MediaCenter plugin is not installed!\nPlease install it."), type = MessageBox.TYPE_INFO,timeout = 10 )
+		
 from Tools.BoundFunction import boundFunction
 import inspect
 

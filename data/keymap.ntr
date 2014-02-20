@@ -97,7 +97,9 @@
 	<map context="InfobarExtensions">
 		<key id="KEY_BLUE" mapto="extensions" flags="b" />
 		<key id="KEY_BLUE" mapto="showInfoPanel" flags="l" />
-		<key id="KEY_YELLOW" mapto="showMediaPortal" flags="b" />
+		<key id="KEY_YELLOW" mapto="showMediaPortal" flags="l" />
+		<key id="KEY_HOMEPAGE" mapto="showMediaPortal" flags="b" />
+		<key id="KEY_MEDIA" mapto="showMediaCenter" flags="b" />
 
 	</map>
 
