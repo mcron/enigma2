@@ -1,5 +1,5 @@
 from enigma import eListboxPythonMultiContent, gFont, eEnv
-from boxbranding import getMachineBrand, getMachineName, getBoxType
+from boxbranding import getMachineBrand, getMachineName, getBoxType, getBrandOEM
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.Pixmap import Pixmap
@@ -22,7 +22,6 @@ from Screens.SkinSelector import LcdSkinSelector
 from Screens.VideoMode import VideoSetup
 
 from Plugins.Plugin import PluginDescriptor
-from Plugins.SystemPlugins.Satfinder.plugin import Satfinder
 from Plugins.SystemPlugins.NetworkBrowser.MountManager import AutoMountManager
 from Plugins.SystemPlugins.NetworkBrowser.NetworkBrowser import NetworkBrowser
 from Plugins.SystemPlugins.NetworkWizard.NetworkWizard import NetworkWizard
@@ -43,6 +42,7 @@ from time import sleep
 from re import search
 
 import NavigationInstance
+
 plugin_path_networkbrowser = eEnv.resolve("${libdir}/enigma2/python/Plugins/SystemPlugins/NetworkBrowser")
 
 if path.exists("/usr/lib/enigma2/python/Plugins/Extensions/AudioSync"):
@@ -58,17 +58,23 @@ if path.exists("/usr/lib/enigma2/python/Plugins/SystemPlugins/VideoEnhancement/p
 else:
 	VIDEOENH = False
 
-if path.exists("/usr/lib/enigma2/python/Plugins/SystemPlugins/AutoResolution/plugin.pyo"):
-	from Plugins.SystemPlugins.AutoResolution.plugin import AutoResSetupMenu
-	AUTORES = True
-else:
-	AUTORES = False
-
 if path.exists("/usr/lib/enigma2/python/Plugins/Extensions/dFlash"):
 	from Plugins.Extensions.dFlash.plugin import dFlash
 	DFLASH = True
 else:
 	DFLASH = False
+
+if path.exists("/usr/lib/enigma2/python/Plugins/SystemPlugins/PositionerSetup/plugin.pyo"):
+	from Plugins.SystemPlugins.PositionerSetup.plugin import PositionerSetup, RotorNimSelection
+	POSSETUP = True
+else:
+	POSSETUP = False
+
+if path.exists("/usr/lib/enigma2/python/Plugins/SystemPlugins/Satfinder/plugin.pyo"):
+	from Plugins.SystemPlugins.Satfinder.plugin import Satfinder
+	SATFINDER = True
+else:
+	SATFINDER = False
 
 def isFileSystemSupported(filesystem):
 	try:
@@ -78,6 +84,14 @@ def isFileSystemSupported(filesystem):
 		return False
 	except Exception, ex:
 		print "[Harddisk] Failed to read /proc/filesystems:", ex
+
+def Check_Softcam():
+	found = False
+	for x in listdir('/etc'):
+		if x.find('.emu') > -1:
+			found = True
+			break;
+	return found
 
 class QuickMenu(Screen):
 	skin = """
@@ -176,10 +190,10 @@ class QuickMenu(Screen):
 
 	def goUp(self):
 		self.selectedList.up()
-		
+
 	def goDown(self):
 		self.selectedList.down()
-		
+
 	def keyred(self):
 		self.close()
 
@@ -195,7 +209,8 @@ class QuickMenu(Screen):
 		self.list = []
 		self.oldlist = []
 		self.list.append(QuickMenuEntryComponent("Software Manager",_("Update/Backup/Restore your box"),_("Update/Backup your firmware, Backup/Restore settings")))
-		self.list.append(QuickMenuEntryComponent("Softcam",_("Start/stop/select cam"),_("Start/stop/select your cam, You need to install first a softcam")))
+		if Check_Softcam():
+			self.list.append(QuickMenuEntryComponent("Softcam",_("Start/stop/select cam"),_("Start/stop/select your cam, You need to install first a softcam")))
 		self.list.append(QuickMenuEntryComponent("System",_("System Setup"),_("Setup your System")))
 		self.list.append(QuickMenuEntryComponent("Mounts",_("Mount Setup"),_("Setup your mounts for network")))
 		self.list.append(QuickMenuEntryComponent("Network",_("Setup your local network"),_("Setup your local network. For Wlan you need to boot with a USB-Wlan stick")))
@@ -272,8 +287,6 @@ class QuickMenu(Screen):
 		self.sublist.append(QuickSubMenuEntryComponent("Auto Language",_("Auto Language Selection"),_("Select your Language for Audio/Subtitles")))
 		if os_path.exists("/proc/stb/vmpeg/0/pep_apply") and VIDEOENH == True:
 			self.sublist.append(QuickSubMenuEntryComponent("VideoEnhancement",_("VideoEnhancement Setup"),_("VideoEnhancement Setup")))
-		if AUTORES == True:
-			self.sublist.append(QuickSubMenuEntryComponent("AutoResolution",_("AutoResolution Setup"),_("Automatically change resolution")))
 
 		self["sublist"].l.setList(self.sublist)
 
@@ -281,16 +294,20 @@ class QuickMenu(Screen):
 	def Qtuner(self):
 		self.sublist = []
 		self.sublist.append(QuickSubMenuEntryComponent("Tuner Configuration",_("Setup tuner(s)"),_("Setup each tuner for your satellite system")))
-		self.sublist.append(QuickSubMenuEntryComponent("Positioner Setup",_("Setup rotor"),_("Setup your positioner for your satellite system")))
+		if POSSETUP == True:
+			self.sublist.append(QuickSubMenuEntryComponent("Positioner Setup",_("Setup rotor"),_("Setup your positioner for your satellite system")))
 		self.sublist.append(QuickSubMenuEntryComponent("Automatic Scan",_("Service Searching"),_("Automatic scan for services")))
 		self.sublist.append(QuickSubMenuEntryComponent("Manual Scan",_("Service Searching"),_("Manual scan for services")))
-		self.sublist.append(QuickSubMenuEntryComponent("Sat Finder",_("Search Sats"),_("Search Sats, check signal and lock")))
+		if SATFINDER == True:		
+			self.sublist.append(QuickSubMenuEntryComponent("Sat Finder",_("Search Sats"),_("Search Sats, check signal and lock")))
 		self["sublist"].l.setList(self.sublist)
 
 ######## Software Manager Menu ##############################
 	def Qsoftware(self):
 		self.sublist = []
 		self.sublist.append(QuickSubMenuEntryComponent("Software Update",_("Online software update"),_("Check/Install online updates (you must have a working internet connection)")))
+		if not getBoxType().startswith('az') and not getBoxType().startswith('dm') and not getBrandOEM().startswith('cube'):
+			self.sublist.append(QuickSubMenuEntryComponent("Flash Online",_("Flash Online a new image"),_("Flash on the fly your your Receiver software.")))
 		self.sublist.append(QuickSubMenuEntryComponent("Complete Backup",_("Backup your current image"),_("Backup your current image to HDD or USB. This will make a 1:1 copy of your box")))
 		self.sublist.append(QuickSubMenuEntryComponent("Backup Settings",_("Backup your current settings"),_("Backup your current settings. This includes E2-setup, channels, network and all selected files")))
 		self.sublist.append(QuickSubMenuEntryComponent("Restore Settings",_("Restore settings from a backup"),_("Restore your settings back from a backup. After restore the box will restart to activated the new settings")))
@@ -328,7 +345,7 @@ class QuickMenu(Screen):
 #####################################################################
 ######## Make Selection MAIN MENU LIST ##############################
 #####################################################################
-			
+
 	def okList(self):
 		item = self["list"].getCurrent()
 
@@ -366,7 +383,7 @@ class QuickMenu(Screen):
 #####################################################################
 ######## Make Selection SUB MENU LIST ##############################
 #####################################################################
-			
+
 	def okSubList(self):
 		item = self["sublist"].getCurrent()
 
@@ -433,15 +450,13 @@ class QuickMenu(Screen):
 			self.session.open(ShowSoftcamPackages)
 ######## Select AV Setup Menu ##############################
 		elif item[0] == _("AV Settings"):
-			self.session.open(VideoSetup, video_hw)
+			self.session.open(VideoSetup)
 		elif item[0] == _("Auto Language"):
 			self.openSetup("autolanguagesetup")
 		elif item[0] == _("Audio Sync"):
 			self.session.open(AC3LipSyncSetup, plugin_path_audiosync)
 		elif item[0] == _("VideoEnhancement"):
 			self.session.open(VideoEnhancementSetup)
-		elif item[0] == _("AutoResolution"):
-			self.session.open(AutoResSetupMenu)
 ######## Select TUNER Setup Menu ##############################
 		elif item[0] == _("Tuner Configuration"):
 			self.session.open(NimSelection)
@@ -455,8 +470,9 @@ class QuickMenu(Screen):
 			self.SatfinderMain()
 ######## Select Software Manager Menu ##############################
 		elif item[0] == _("Software Update"):
-			#self.session.open(UpdatePlugin)
 			self.session.open(SoftwarePanel)
+		elif item[0] == _("Flash Online"):
+			self.session.open(FlashOnline)
 		elif item[0] == _("Complete Backup"):
 			if DFLASH == True:
 				self.session.open(dFlash)
@@ -521,7 +537,7 @@ class QuickMenu(Screen):
 			self.adapters = [(iNetwork.getFriendlyAdapterName(x),x) for x in iNetwork.getInstalledAdapters()]
 
 		self.activeInterface = None
-	
+
 		for x in self.adapters:
 			if iNetwork.getAdapterAttribute(x[1], 'up') is True:
 				self.activeInterface = x[1]
@@ -553,7 +569,7 @@ class QuickMenu(Screen):
 
 		nimList = []
 		for x in nims:
-			if not nimmanager.getNimConfig(x).configMode.getValue() in ("loopthrough", "satposdepends", "nothing"):
+			if not nimmanager.getNimConfig(x).configMode.value in ("loopthrough", "satposdepends", "nothing"):
 				nimList.append(x)
 
 		if len(nimList) == 0:
@@ -562,12 +578,8 @@ class QuickMenu(Screen):
 			if len(NavigationInstance.instance.getRecordings()) > 0:
 				self.session.open(MessageBox, _("A recording is currently running. Please stop the recording before trying to start the satfinder."), MessageBox.TYPE_ERROR)
 			else:
-				if len(nimList) == 1:
-					self.session.open(Satfinder, nimList[0])
-				else:
-					self.session.open(SatNimSelection)
+				self.session.open(Satfinder)
 
-		
 ######## SOFTWARE MANAGER TOOLS #######################
 	def backupfiles_choosen(self, ret):
 		config.plugins.configurationbackup.backupdirs.save()
@@ -595,9 +607,9 @@ def QuickMenuEntryComponent(name, description, long_description = None, width=54
 
 	return [
 		_(name),
-		MultiContentEntryText(pos=(120, 5), size=(width-120, 25), font=0, text = _(name)),
-		MultiContentEntryText(pos=(120, 26), size=(width-120, 17), font=1, text = _(description)),
-		MultiContentEntryPixmapAlphaTest(pos=(10, 5), size=(100, 40), png = png),
+		MultiContentEntryText(pos=(60, 5), size=(width-60, 25), font=0, text = _(name)),
+		MultiContentEntryText(pos=(60, 26), size=(width-60, 17), font=1, text = _(description)),
+		MultiContentEntryPixmapAlphaTest(pos=(10, 5), size=(40, 40), png = png),
 		_(long_description),
 	]
 

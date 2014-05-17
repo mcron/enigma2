@@ -21,7 +21,8 @@ import shutil
 
 
 #############################################################################################################
-feedurl_mcron1 = 'http://sat-world-forum.com/ronny/images/e3hd/online'
+feedurl_mcron2 = 'http://sat-world-forum.com/ronny/images/axase3c/online'
+feedurl_mcron1 = 'http://sat-world-forum.com/ronny/images/axase3/online'
 feedurl_mcron = 'http://sat-world-forum.com/ronny/images/ventonhdx/online'
 imagePath = '/hdd/images'
 flashPath = '/hdd/images/flash'
@@ -172,7 +173,9 @@ class doFlashImage(Screen):
 	def box(self):
 		box = getBoxType()
 		machinename = getMachineName()
-		if box == 'odinm6':
+		if box in ('uniboxhd1', 'uniboxhd2', 'uniboxhd3'):
+			box = "ventonhdx"
+		elif box == 'odinm6':
 			box = getMachineName().lower()
 		elif box == "inihde" and machinename.lower() == "xpeedlx":
 			box = "xpeedlx"
@@ -198,8 +201,10 @@ class doFlashImage(Screen):
 		if self.Online:
 			if box == 'ventonhdx':
 				url = self.feedurl + "/" + "/" + sel
-			elif box == 'e3hd':
+			elif box == 'axase3':
 				url = self.feedurl1 + "/" + "/" + sel
+			elif box == 'axase3c':
+				url = self.feedurl2 + "/" + "/" + sel
 			
 			u = urllib2.urlopen(url)
 			f = open(file_name, 'wb')
@@ -320,16 +325,20 @@ class doFlashImage(Screen):
 		if self.Online:
 			self["key_yellow"].setText("")
 			self.feedurl1 = feedurl_mcron1
+			self.feedurl2 = feedurl_mcron2
 			self.feedurl = feedurl_mcron
 			self["key_blue"].setText("")
 			#url = '%s/index.php?open=%s' % (self.feedurl,box)
 			req = urllib2.Request(self.feedurl)
 			req1 = urllib2.Request(self.feedurl1)
+			req2 = urllib2.Request(self.feedurl2)
 			try:
 				if box == 'ventonhdx':
 					response = urllib2.urlopen(req)
-				elif box == 'e3hd':
+				elif box == 'axase3':
 					response = urllib2.urlopen(req1)
+				elif box == 'axase3c':
+					response = urllib2.urlopen(req2)
 			except urllib2.URLError as e:
 				print "URL ERROR: %s" % e
 				return
@@ -343,11 +352,13 @@ class doFlashImage(Screen):
  
 			lines = the_page.split('\n')
 			for line in lines:
-				if line.find('<a href="swf-3.0-') > -1 and line.find('_usb.zip') > -1:
+				if line.find('<a href="swf-4.0-') > -1 and line.find('_usb.zip') > -1:
 					if box == 'ventonhdx':
 						self.imagelist.append(line[13:47])
-					elif box == 'e3hd':
-						self.imagelist.append(line[13:42])	
+					elif box == 'axase3':
+						self.imagelist.append(line[13:46])
+					elif box == 'axase3c':
+						self.imagelist.append(line[13:45])	
 		else:
 			self["key_blue"].setText(_("Delete"))
 			self["key_yellow"].setText(_("Devices"))

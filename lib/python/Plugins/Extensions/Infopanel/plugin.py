@@ -127,7 +127,7 @@ machinename = getMachineName()
 machinebrand = getMachineBrand()
 OEMname = getBrandOEM()
 
-INFO_Panel_Version = 'Info-Panel V2.0 (mod by mcron)'
+INFO_Panel_Version = 'Info-Panel V2.1 (mod by mcron)'
 print "[Info-Panel] machinebrand: %s"  % (machinebrand)
 print "[Info-Panel] machinename: %s"  % (machinename)
 print "[Info-Panel] oem name: %s"  % (OEMname)
@@ -299,7 +299,7 @@ class Infopanel(Screen, InfoBarPiP):
 		self.Mlist.append(MenuEntryItem((InfoEntryComponent ("ImageFlash" ), _("Image-Flasher"), ("ImageFlash"))))
 		self.Mlist.append(MenuEntryItem((InfoEntryComponent ("QuickMenu" ), _("Quick-Menu"), ("QuickMenu"))))
 		self.Mlist.append(MenuEntryItem((InfoEntryComponent ("LogManager" ), _("Log-Manager"), ("LogManager"))))
-		self.Mlist.append(MenuEntryItem((InfoEntryComponent ("NeutrinoHD2" ), _("NeutrinoHD2"), ("NeutrinoHD2"))))
+		#self.Mlist.append(MenuEntryItem((InfoEntryComponent ("NeutrinoHD2" ), _("NeutrinoHD2"), ("NeutrinoHD2"))))
 		self.Mlist.append(MenuEntryItem((InfoEntryComponent ("SoftwareManager" ), _("Software-Manager"), ("software-manager"))))
 		self.Mlist.append(MenuEntryItem((InfoEntryComponent('KeymapSel'), _("Keymap-Selection"), 'KeymapSel')))	
 		self.Mlist.append(MenuEntryItem((InfoEntryComponent('Plugins'), _("Plugins"), 'Plugins')))
