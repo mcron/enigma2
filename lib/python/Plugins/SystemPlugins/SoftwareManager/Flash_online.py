@@ -356,7 +356,7 @@ class doFlashImage(Screen):
 					if box == 'ventonhdx':
 						self.imagelist.append(line[13:47])
 					elif box == 'axase3':
-						self.imagelist.append(line[13:46])
+						self.imagelist.append(line[13:44])
 					elif box == 'axase3c':
 						self.imagelist.append(line[13:45])	
 		else:
