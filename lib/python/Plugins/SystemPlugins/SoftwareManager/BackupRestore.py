@@ -21,28 +21,29 @@ from Tools.Directories import *
 from os import system, popen, path, makedirs, listdir, access, stat, rename, remove, W_OK, R_OK
 from time import gmtime, strftime, localtime, sleep
 from datetime import date
-from boxbranding import getBoxType
+from boxbranding import getBoxType, getMachineBrand, getMachineName
+
+boxtype = getBoxType()
 
 config.plugins.configurationbackup = ConfigSubsection()
-if getBoxType() == "odinm9" or getBoxType() == "odinm7" or getBoxType() == "odinm6":
+if boxtype in ('maram9', 'classm', 'axodin', 'axodinc', 'starsatlx', 'genius', 'evo'):
 	config.plugins.configurationbackup.backuplocation = ConfigText(default = '/media/backup/', visible_width = 50, fixed_size = False)
 else:	
 	config.plugins.configurationbackup.backuplocation = ConfigText(default = '/media/hdd/', visible_width = 50, fixed_size = False)
-config.plugins.configurationbackup.backupdirs = ConfigLocations(default=[eEnv.resolve('${sysconfdir}/enigma2/'), '/etc/CCcam.cfg', '/usr/keys/CCcam.cfg',
+config.plugins.configurationbackup.backupdirs = ConfigLocations(default=[eEnv.resolve('${sysconfdir}/enigma2/'), '/etc/CCcam.cfg', '/usr/keys/',
 																		 '/etc/network/interfaces', '/etc/wpa_supplicant.conf', '/etc/wpa_supplicant.ath0.conf',
 																		 '/etc/wpa_supplicant.wlan0.conf', '/etc/resolv.conf', '/etc/default_gw', '/etc/hostname',
-																		 eEnv.resolve("${datadir}/enigma2/keymap.usr"), eEnv.resolve("${datadir}/enigma2/keymap.ntr")])
+																		 eEnv.resolve("${datadir}/enigma2/keymap.usr")])
 
 def getBackupPath():
-	backuppath = config.plugins.configurationbackup.backuplocation.getValue()
-	box = getBoxType()
+	backuppath = config.plugins.configurationbackup.backuplocation.value
 	if backuppath.endswith('/'):
-		return backuppath + 'backup_' + box
+		return backuppath + 'backup_' + boxtype
 	else:
-		return backuppath + '/backup_' + box
+		return backuppath + '/backup_' + boxtype
 
 def getOldBackupPath():
-	backuppath = config.plugins.configurationbackup.backuplocation.getValue()
+	backuppath = config.plugins.configurationbackup.backuplocation.value
 	if backuppath.endswith('/'):
 		return backuppath + 'backup'
 	else:
@@ -96,7 +97,7 @@ class BackupScreen(Screen, ConfigListScreen):
 		try:
 			if path.exists(self.backuppath) == False:
 				makedirs(self.backuppath)
-			self.backupdirs = ' '.join( config.plugins.configurationbackup.backupdirs.getValue() )
+			self.backupdirs = ' '.join( config.plugins.configurationbackup.backupdirs.value )
 			if not "/tmp/installed-list.txt" in self.backupdirs:
 				self.backupdirs = self.backupdirs + " /tmp/installed-list.txt"
 			if not "/tmp/changed-configfiles.txt" in self.backupdirs:
@@ -151,7 +152,7 @@ class BackupSelection(Screen):
 		self["key_green"] = StaticText(_("Save"))
 		self["key_yellow"] = StaticText()
 
-		self.selectedFiles = config.plugins.configurationbackup.backupdirs.getValue()
+		self.selectedFiles = config.plugins.configurationbackup.backupdirs.value
 		defaultDir = '/'
 		inhibitDirs = ["/bin", "/boot", "/dev", "/autofs", "/lib", "/proc", "/sbin", "/sys", "/hdd", "/tmp", "/mnt", "/media"]
 		self.filelist = MultiFileSelectList(self.selectedFiles, defaultDir, inhibitDirs = inhibitDirs )
@@ -362,13 +363,31 @@ class RestoreScreen(Screen, ConfigListScreen):
 
 	def checkPlugins(self):
 		if path.exists("/tmp/installed-list.txt"):
-			self.session.openWithCallback(self.restartGUI, installedPlugins)
+			if os.path.exists("/media/hdd/images/config/noplugins") and config.misc.firstrun.value:
+				self.userRestoreScript()
+			else:
+				self.session.openWithCallback(self.userRestoreScript, installedPlugins)
 		else:
-			self.restartGUI()
+			self.userRestoreScript()
+
+	def userRestoreScript(self, ret = None):
+		startSH = '/media/hdd/images/config/myrestore.sh'
+		if path.exists(startSH):
+			self.session.openWithCallback(self.restoreMetrixSkin, Console, title = _("Running Myrestore script, Please wait ..."), cmdlist = [startSH], closeOnSuccess = True)
+		else:
+			self.restoreMetrixSkin()
 
 	def restartGUI(self, ret = None):
-		self.console = eConsoleAppContainer()
-		self.console.execute("init 4;reboot")
+		self.session.open(Console, title = _("Your %s %s will Reboot...")% (getMachineBrand(), getMachineName()), cmdlist = ["init 4;reboot"])
+
+	def restoreMetrixSkin(self, ret = None):
+		try:
+			from Plugins.Extensions.MyMetrixLite.MainSettingsView import MainSettingsView
+			print"Restoring MyMetrixLite..."
+			MainSettingsView(None,True)
+		except:
+			pass
+		self.restartGUI()
 
 	def runAsync(self, finished_cb):
 		self.doRestore()
@@ -465,7 +484,10 @@ class installedPlugins(Screen):
 		if len(self.Menulist) == 0:
 			self.close()
 		else:
-			self.session.openWithCallback(self.startInstall, MessageBox, _("Backup plugins found\ndo you want to install now?"))
+			if os.path.exists("/media/hdd/images/config/plugins") and config.misc.firstrun.value:
+				self.startInstall(True)
+			else:
+				self.session.openWithCallback(self.startInstall, MessageBox, _("Backup plugins found\ndo you want to install now?"))
 
 	def startInstall(self, ret = None):
 		if ret:
@@ -504,6 +526,8 @@ class RestorePlugins(Screen):
 
 	def setWindowTitle(self):
 		self.setTitle(_("Restore Plugins"))
+		if os.path.exists("/media/hdd/images/config/plugins") and config.misc.firstrun.value:
+			self.green()
 
 	def exit(self):
 		self.close()
