@@ -197,23 +197,15 @@
 	</map>
 
 	<map context="InfobarActions">
-		<key id="KEY_FAVORITES" mapto="openBouquetList" flags="m" />
-		<key id="KEY_PVR" mapto="showMovies" flags="m" />
+		<key id="KEY_VIDEO" mapto="showMovies" flags="b" />
+		<key id="KEY_RADIO" mapto="showRadio" flags="b" />
+		<key id="KEY_BOOKMARKS" mapto="showPluginBrowser" flags="m" />
 		<key id="KEY_LIST" mapto="showMovies" flags="m" />
-		<key id="KEY_RADIO" mapto="showRadio" flags="m" />
-		<key id="KEY_TV" mapto="showTv" flags="m" />
-		<key id="KEY_PROG1" mapto="openBouquetList" flags="m" />
-		<key id="KEY_PROG2" mapto="openBouquetList" flags="m" />
-		<key id="KEY_TEXT" mapto="showText" flags="m" />
-		<key id="KEY_FILE" mapto="showMovies" flags="m" />
-		<key id="KEY_MEDIA" mapto="showMediaPlayer" flags="m" />
-		<key id="KEY_PROGRAM" mapto="openTimerList" flags="m" />
-		<key id="KEY_BOOKMARKS" mapto="showPluginBrowser" flags="mm" />
-		<key id="KEY_OPTION" mapto="showLanSetup" flags="m" />
-		<key id="KEY_VIDEO" mapto="showFormat" flags="m" />
-		<key id="KEY_SEARCH" mapto="showWWW" flags="m" />
-		<key id="KEY_SETUP" mapto="showSetup" flags="m" />
+		<key id="KEY_GREEN" mapto="showPluginBrowser" flags="l" />
+		        <key id="KEY_TV" mapto="showTv" flags="b" />
+		        <key id="KEY_FILE" mapto="showMovies" flags="b" />
 	</map>
+
 
 	<!--<map context="2ndInfobarActions">
 		<key id="KEY_UP" mapto="prevPage" flags="mr" />
