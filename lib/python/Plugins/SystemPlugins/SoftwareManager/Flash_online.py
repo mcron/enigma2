@@ -23,6 +23,7 @@ distro =  getImageDistro()
 ImageVersion = getImageVersion()
 
 #############################################################################################################
+feedurl_mcron3 = 'http://sat-world-forum.com/ronny/images/ventonhde/online'
 feedurl_mcron2 = 'http://sat-world-forum.com/ronny/images/axase3c/online'
 feedurl_mcron1 = 'http://sat-world-forum.com/ronny/images/axase3/online'
 feedurl_mcron = 'http://sat-world-forum.com/ronny/images/ventonhdx/online'
@@ -224,6 +225,8 @@ class doFlashImage(Screen):
 				url = self.feedurl1 + "/" + "/" + sel
 			elif box == 'axase3c':
 				url = self.feedurl2 + "/" + "/" + sel
+			elif box == 'uniboxhde':
+				url = self.feedurl3 + "/" + "/" + sel
 			
 			u = urllib2.urlopen(url)
 			f = open(file_name, 'wb')
@@ -447,12 +450,14 @@ class doFlashImage(Screen):
 			self["key_yellow"].setText("")
 			self.feedurl1 = feedurl_mcron1
 			self.feedurl2 = feedurl_mcron2
+			self.feedurl3 = feedurl_mcron3
 			self.feedurl = feedurl_mcron
 			self["key_blue"].setText("")
 			#url = '%s/index.php?open=%s' % (self.feedurl,box)
 			req = urllib2.Request(self.feedurl)
 			req1 = urllib2.Request(self.feedurl1)
 			req2 = urllib2.Request(self.feedurl2)
+			req3 = urllib2.Request(self.feedurl3)
 			try:
 				if box == 'ventonhdx':
 					response = urllib2.urlopen(req)
@@ -460,6 +465,8 @@ class doFlashImage(Screen):
 					response = urllib2.urlopen(req1)
 				elif box == 'axase3c':
 					response = urllib2.urlopen(req2)
+				elif box == 'uniboxhde':
+					response = urllib2.urlopen(req3)
 			except urllib2.URLError as e:
 				print "URL ERROR: %s" % e
 				return
@@ -473,13 +480,15 @@ class doFlashImage(Screen):
 
 			lines = the_page.split('\n')
 			for line in lines:
-				if line.find('<a href="swf-4.0-') > -1 and line.find('_usb.zip') > -1:
+				if line.find('<a href="swf-4.1-') > -1 and line.find('_usb.zip') > -1:
 					if box == 'ventonhdx':
 						self.imagelist.append(line[13:47])
 					elif box == 'axase3':
 						self.imagelist.append(line[13:44])
 					elif box == 'axase3c':
-						self.imagelist.append(line[13:45])	
+						self.imagelist.append(line[13:45])
+					elif box == 'uniboxhde':
+						self.imagelist.append(line[13:47])	
 		else:
 			self["key_blue"].setText(_("Delete"))
 			self["key_yellow"].setText(_("Devices"))
