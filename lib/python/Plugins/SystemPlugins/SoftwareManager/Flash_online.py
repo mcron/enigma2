@@ -27,9 +27,9 @@ feedurl_mcron3 = 'http://sat-world-forum.com/ronny/images/ventonhde/online'
 feedurl_mcron2 = 'http://sat-world-forum.com/ronny/images/axase3c/online'
 feedurl_mcron1 = 'http://sat-world-forum.com/ronny/images/axase3/online'
 feedurl_mcron = 'http://sat-world-forum.com/ronny/images/ventonhdx/online'
-imagePath = '/hdd/images'
-flashPath = '/hdd/images/flash'
-flashTmp = '/hdd/images/tmp'
+imagePath = '/media/hdd/images'
+flashPath = '/media/hdd/images/flash'
+flashTmp = '/media/hdd/images/tmp'
 ofgwritePath = '/usr/bin/ofgwrite'
 #############################################################################################################
 
