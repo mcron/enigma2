@@ -113,26 +113,21 @@ class PictureInPicture(Screen):
 		config.av.pip.value[2] = w
 		config.av.pip.value[3] = h
 		config.av.pip.save()
-		if config.av.pip_mode.value == "standard":
-			self.instance.resize(eSize(*(w, h)))
-			self["video"].instance.resize(eSize(*(w, h)))
-			self.setSizePosMainWindow()
-		elif config.av.pip_mode.value == "cascade":
-			self.instance.resize(eSize(*(w, h)))
-			self["video"].instance.resize(eSize(*(w, h)))
-			self.setSizePosMainWindow(0, h, MAX_X - w, MAX_Y - h)
-		elif config.av.pip_mode.value == "split":
-			self.instance.resize(eSize(*(MAX_X/2, MAX_Y )))
-			self["video"].instance.resize(eSize(*(MAX_X/2, MAX_Y)))
-			self.setSizePosMainWindow(0, 0, MAX_X/2, MAX_Y)
-		elif config.av.pip_mode.value == "byside":
-			self.instance.resize(eSize(*(MAX_X/2, MAX_Y/2 )))
-			self["video"].instance.resize(eSize(*(MAX_X/2, MAX_Y/2)))
-			self.setSizePosMainWindow(0, MAX_Y/4, MAX_X/2, MAX_Y/2)
-		elif config.av.pip_mode.value in "bigpig external":
-			self.instance.resize(eSize(*(MAX_X, MAX_Y)))
-			self["video"].instance.resize(eSize(*(MAX_X, MAX_Y)))
-			self.setSizePosMainWindow()
+		self.instance.resize(eSize(*(w, h)))
+		self["video"].instance.resize(eSize(*(w, h)))
+
+        def setExternalPiP(self, onoff):
+		if self.has_external_pip:
+			procentry = open("/proc/stb/vmpeg/1/external", "w")
+			if onoff:
+				procentry.write("on")
+			else:
+				procentry.write("off")
+
+	def toggleExternalPiP(self):
+		config.av.external_pip.setValue(not config.av.external_pip.getValue())
+		config.av.external_pip.save()
+		self.setExternalPiP(config.av.external_pip.getValue())		
 
 	def setSizePosMainWindow(self, x = 0, y = 0, w = MAX_X, h = MAX_Y):
 		if SystemInfo["VideoDestinationConfigurable"]:
