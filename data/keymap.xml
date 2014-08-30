@@ -247,7 +247,7 @@
 	</map>
 
 	<map context="InfobarPiPActions">
-		<key id="KEY_SCREEN" mapto="activatePiP" flags="b" />
+		<key id="KEY_VIDEO" mapto="activatePiP" flags="b" />
 	</map>
 
 	<map context="InfobarSubserviceQuickzapActions">
@@ -410,7 +410,7 @@
 			<key id="KEY_YELLOW" mapto="timeshiftStart" flags="m" />
 		</device>
 
-		<key id="KEY_PLAYPAUSE" mapto="timeshiftStart" flags="m" />
+		<key id="KEY_PLAY" mapto="timeshiftStart" flags="m" />
 		<key id="KEY_PAUSE" mapto="timeshiftStart" flags="m" />
 		<key id="KEY_STOP" mapto="timeshiftStop" flags="m" />
 		<key id="KEY_TIME" mapto="timeshiftStart" flags="m" />
