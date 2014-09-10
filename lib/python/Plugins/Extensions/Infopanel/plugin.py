@@ -197,7 +197,6 @@ def Plugins(**kwargs):
 
 MENU_SKIN = """<screen position="center,center" size="950,470" title="INFO Panel" >
 	<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/Infopanel/pics/redlogo.png" position="0,380" size="950,84" alphatest="on" zPosition="1"/>
-	<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/Infopanel/pics/alliance.png" position="670,255" size="100,67" alphatest="on" zPosition="1"/>
 	<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/Infopanel/pics/openswf_info.png" position="510,11" size="550,354" alphatest="on" zPosition="1"/>
 		<widget source="global.CurrentTime" render="Label" position="450, 340" size="500,24" font="Regular;20" foregroundColor="#FFFFFF" halign="right" transparent="1" zPosition="5">
 		<convert type="ClockToText">>Format%H:%M:%S</convert>
