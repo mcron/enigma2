@@ -480,7 +480,7 @@ class doFlashImage(Screen):
 
 			lines = the_page.split('\n')
 			for line in lines:
-				if line.find('<a href="swf-4.1-') > -1 and line.find('_usb.zip') > -1:
+				if line.find('<a href="swf-4.') > -1 and line.find('_usb.zip') > -1:
 					if box == 'ventonhdx':
 						self.imagelist.append(line[13:47])
 					elif box == 'axase3':
