@@ -15,7 +15,7 @@ from Components.Network import iNetwork
 
 from Tools.StbHardware import getFPVersion
 
-from os import path
+from os import path, popen
 from re import search
 
 class About(Screen):
@@ -47,8 +47,16 @@ class About(Screen):
 		if path.exists('/proc/stb/info/chipset'):
 			AboutText += _("Chipset:\t%s") % about.getChipSetString() + "\n"
 
+		cmd = 'cat /proc/cpuinfo | grep "cpu MHz" -m 1 | awk -F ": " ' + "'{print $2}'"
+		try:
+			res = popen(cmd).read()
+		except:
+			res = ""
+		cpuMHz = ""
+		if res:
+			cpuMHz = "   (" + res.replace("\n", "") + " MHz)"
 
-		AboutText += _("CPU:\t%s") % about.getCPUString() + "\n"
+		AboutText += _("CPU:\t%s") % about.getCPUString() + cpuMHz + "\n"
 		AboutText += _("Cores:\t%s") % about.getCpuCoresString() + "\n"
 
 		AboutText += _("Version:\t%s") % getImageVersion() + "\n"
@@ -68,7 +76,7 @@ class About(Screen):
 		if fp_version is None:
 			fp_version = ""
 		elif fp_version != 0:
-			fp_version = _("Frontprocessor version: %d") % fp_version
+			fp_version = _("Frontprocessor version: %s") % fp_version
 			AboutText += fp_version + "\n"
 
 		tempinfo = ""
@@ -82,7 +90,16 @@ class About(Screen):
 			f.close()
 		if tempinfo and int(tempinfo.replace('\n', '')) > 0:
 			mark = str('\xc2\xb0')
-			AboutText += _("System temperature: %s") % tempinfo.replace('\n', '') + mark + "C\n\n"
+			AboutText += _("System temperature:\t%s") % tempinfo.replace('\n', '') + mark + "C\n"
+
+		tempinfo = ""
+		if path.exists('/proc/stb/fp/temp_sensor_avs'):
+			f = open('/proc/stb/fp/temp_sensor_avs', 'r')
+			tempinfo = f.read()
+			f.close()
+		if tempinfo and int(tempinfo.replace('\n', '')) > 0:
+			mark = str('\xc2\xb0')
+			AboutText += _("Processor temperature:\t%s") % tempinfo.replace('\n', '') + mark + "C\n"
 
 		self["AboutScrollLabel"] = ScrollLabel(AboutText)
 
@@ -195,9 +212,18 @@ class Devices(Screen):
 			self.parts = line.split()
 			if line and self.parts[0] and (self.parts[0].startswith('192') or self.parts[0].startswith('//192')):
 				line = line.split()
-				ipaddress = line[0]
-				mounttotal = line[1]
-				mountfree = line[3]
+				try:
+					ipaddress = line[0]
+				except:
+					ipaddress = ""
+				try:
+					mounttotal = line[1]
+				except:
+					mounttotal = ""
+				try:
+					mountfree = line[3]
+				except:
+					mountfree = ""
 				if self.mountinfo:
 					self.mountinfo += "\n"
 				self.mountinfo += "%s (%sB, %sB %s)" % (ipaddress, mounttotal, mountfree, _("free"))
@@ -486,7 +512,7 @@ class AboutSummary(Screen):
 		Screen.__init__(self, session, parent=parent)
 		self["selected"] = StaticText("SWF:" + getImageVersion())
 
-		AboutText = _("Model:\t%s %s\n") % (getMachineBrand(), getMachineName())
+		AboutText = _("Model: %s %s\n") % (getMachineBrand(), getMachineName())
 
 		if path.exists('/proc/stb/info/chipset'):
 			chipset = open('/proc/stb/info/chipset', 'r').read()
@@ -511,7 +537,14 @@ class AboutSummary(Screen):
 			tempinfo = open('/proc/stb/fp/temp_sensor', 'r').read()
 		if tempinfo and int(tempinfo.replace('\n', '')) > 0:
 			mark = str('\xc2\xb0')
-			AboutText += _("System temperature: %s") % tempinfo.replace('\n', '') + mark + "C\n\n"
+			AboutText += _("System temperature:\t%s") % tempinfo.replace('\n', '') + mark + "C\n"
+
+		tempinfo = ""
+		if path.exists('/proc/stb/fp/temp_sensor_avs'):
+			tempinfo = open('/proc/stb/fp/temp_sensor_avs', 'r').read()
+		if tempinfo and int(tempinfo.replace('\n', '')) > 0:
+			mark = str('\xc2\xb0')
+			AboutText += _("System temperature:\t%s") % tempinfo.replace('\n', '') + mark + "C\n"
 
 		self["AboutText"] = StaticText(AboutText)
 
@@ -547,7 +580,7 @@ class ViewGitLog(Screen):
 			self.logtype = 'oe'
 		else:
 			self["key_yellow"].setText(_("Show OE Log"))
-			self.setTitle(_("Enimga2 Changes"))
+			self.setTitle(_("Enigma2 Changes"))
 			self.logtype = 'e2'
 		self.getlog()
 
