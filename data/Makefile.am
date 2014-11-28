@@ -10,8 +10,6 @@ dist_pkgdata_DATA = \
 	rcpositions.xml \
 	setup.xml \
 	skin_subtitles.xml \
-	skin.xml \
-	skin_default.xml \
 	startwizard.xml \
 	userinterfacepositionerwizard.xml \
 	videowizard.xml \
