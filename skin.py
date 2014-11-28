@@ -39,13 +39,13 @@ class SkinError(Exception):
 	def __init__(self, message):
 		self.msg = message
 	def __str__(self):
-		return "{%s}: %s. Please contact the skin's author!" % (config.skin.primary_skin.getValue(), self.msg)
+		return "{%s}: %s. Please contact the skin's author!" % (config.skin.primary_skin.value, self.msg)
 
 class DisplaySkinError(Exception):
 	def __init__(self, message):
 		self.msg = message
 	def __str__(self):
-		return "{%s}: %s. Please contact the skin's author!" % (config.skin.display_skin.getValue(), self.msg)
+		return "{%s}: %s. Please contact the skin's author!" % (config.skin.display_skin.value, self.msg)
 
 dom_skins = [ ]
 
@@ -108,12 +108,12 @@ display_skin_id = 1
 if getBoxType().startswith('dm'):
 	display_skin_id = 2
 try:
-	if not addSkin(os.path.join('display', config.skin.display_skin.getValue())):
+	if not addSkin(os.path.join('display', config.skin.display_skin.value)):
 		raise DisplaySkinError, "display skin not found"
 except Exception, err:
 	print "SKIN ERROR:", err
 	skin = DEFAULT_DISPLAY_SKIN
-	if config.skin.display_skin.getValue() == skin:
+	if config.skin.display_skin.value == skin:
 		skin = 'skin_display.xml'
 	print "defaulting to standard display skin...", skin
 	config.skin.display_skin.value = skin
@@ -123,19 +123,19 @@ except Exception, err:
 
 # Add Skin for Display
 try:
-	addSkin(config.vfd.show.getValue())
+	addSkin(config.vfd.show.value)
 except:
 	addSkin('skin_text.xml')
 
 addSkin('skin_subtitles.xml')
 
 try:
-	if not addSkin(config.skin.primary_skin.getValue()):
+	if not addSkin(config.skin.primary_skin.value):
 		raise SkinError, "primary skin not found"
 except Exception, err:
 	print "SKIN ERROR:", err
 	skin = DEFAULT_SKIN
-	if config.skin.primary_skin.getValue() == skin:
+	if config.skin.primary_skin.value == skin:
 		skin = 'skin.xml'
 	print "defaulting to standard skin...", skin
 	config.skin.primary_skin.value = skin
@@ -280,10 +280,10 @@ def loadPixmap(path, desktop):
 	return ptr
 
 class AttributeParser:
-	def __init__(self, guiObject, desktop, scale = ((1,1),(1,1))):
+	def __init__(self, guiObject, desktop, scale=((1,1),(1,1))):
 		self.guiObject = guiObject
 		self.desktop = desktop
-		self.scale = scale
+		self.scaleTuple = scale
 	def applyOne(self, attrib, value):
 		try:
 			getattr(self, attrib)(value)
@@ -299,24 +299,26 @@ class AttributeParser:
 				print "[Skin] Attribute not implemented:", attrib, "value:", value
 			except SkinError, ex:
 				print "[Skin] Error:", ex
+			except:
+				print "[Skin] Error:", attrib
 	def conditional(self, value):
 		pass
 	def position(self, value):
 		if isinstance(value, tuple):
 			self.guiObject.move(ePoint(*value))
 		else:
-			self.guiObject.move(parsePosition(value, self.scale, self.guiObject, self.desktop, self.guiObject.csize()))
+			self.guiObject.move(parsePosition(value, self.scaleTuple, self.guiObject, self.desktop, self.guiObject.csize()))
 	def size(self, value):
 		if isinstance(value, tuple):
 			self.guiObject.resize(eSize(*value))
 		else:
-			self.guiObject.resize(parseSize(value, self.scale, self.guiObject, self.desktop))
+			self.guiObject.resize(parseSize(value, self.scaleTuple, self.guiObject, self.desktop))
 	def title(self, value):
 		self.guiObject.setTitle(_(value))
 	def text(self, value):
 		self.guiObject.setText(_(value))
 	def font(self, value):
-		self.guiObject.setFont(parseFont(value, self.scale))
+		self.guiObject.setFont(parseFont(value, self.scaleTuple))
 	def zPosition(self, value):
 		self.guiObject.setZPosition(int(value))
 	def itemHeight(self, value):
@@ -377,7 +379,7 @@ class AttributeParser:
 			print "halign must be either left, center, right or block!, not %s. Please contact the skin's author!" % value
 	def textOffset(self, value):
 		x, y = value.split(',')
-		self.guiObject.setTextOffset(ePoint(int(x) * self.scale[0][0] / self.scale[0][1], int(y) * self.scale[1][0] / self.scale[1][1]))
+		self.guiObject.setTextOffset(ePoint(int(x) * self.scaleTuple[0][0] / self.scaleTuple[0][1], int(y) * self.scaleTuple[1][0] / self.scaleTuple[1][1]))
 	def flags(self, value):
 		flags = value.split(',')
 		for f in flags:
@@ -429,16 +431,16 @@ class AttributeParser:
 		self.guiObject.setItemHeight(int(value))
 	def pointer(self, value):
 		(name, pos) = value.split(':')
-		pos = parsePosition(pos, self.scale)
+		pos = parsePosition(pos, self.scaleTuple)
 		ptr = loadPixmap(name, self.desktop)
 		self.guiObject.setPointer(0, ptr, pos)
 	def seek_pointer(self, value):
 		(name, pos) = value.split(':')
-		pos = parsePosition(pos, self.scale)
+		pos = parsePosition(pos, self.scaleTuple)
 		ptr = loadPixmap(name, self.desktop)
 		self.guiObject.setPointer(1, ptr, pos)
 	def shadowOffset(self, value):
-		self.guiObject.setShadowOffset(parsePosition(value, self.scale))
+		self.guiObject.setShadowOffset(parsePosition(value, self.scaleTuple))
 	def noWrap(self, value):
 		self.guiObject.setNoWrap(1)
 
