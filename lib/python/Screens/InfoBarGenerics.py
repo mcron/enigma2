@@ -2603,11 +2603,11 @@ class InfoBarExtensions:
 					self.updateExtension(y[0], y[1])
 
 	def showMediaPortal(self):
-		from Plugins.Extensions.MediaPortal.plugin import *
+		from Plugins.Extensions.MediaPortal.plugin import MPWall, MPList
 		if config.mediaportal.ansicht.value == "liste":
-			self.session.open(haupt_Screen)
+			self.session.open(MPList)
 		else:
-			self.session.open(haupt_Screen_Wall, config.mediaportal.filter.value)
+			self.session.open(MPWall, config.mediaportal.filter.value)
 
 
 	def showExtensionSelection(self):
